@@ -1,0 +1,51 @@
+name:                format-preserving-yaml
+version:             0.0.1.0
+github:              "wisn/format-preserving-yaml"
+license:             BSD3
+author:              "Wisnu Adi Nurcahyo"
+maintainer:          "wisn.adn@gmail.com"
+copyright:           "2018 Wisnu Adi Nurcahyo"
+
+extra-source-files:
+- README.md
+- CHANGELOG.md
+
+# Metadata used when publishing your package
+synopsis:            A Format-Preserving YAML Parser
+category:            Format
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         A Format-Preserving YAML Parser
+
+dependencies:
+- base >= 4.7 && < 5
+- parsec >= 3.1 && < 3.2
+- text >= 1.2.3 && < 1.2.4
+
+library:
+  source-dirs: src
+
+executables:
+  format-preserving-yaml:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - format-preserving-yaml
+
+tests:
+  format-preserving-yaml-test:
+    main:                YAML.hs
+    source-dirs:         test/Format/Preserving
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - format-preserving-yaml
+    - hspec < 2.5
