@@ -29,7 +29,7 @@ main = do
 -- * Tabs 2 (Comment " Another one" (EOL 1 (Spaces 3 EOF))))))))
 
     case parsed of
-        Right yaml -> putStrLn $ T.unpack yaml
+        Right yaml -> putStrLn $ T.unpack (format yaml)
 -- > # This is a comment
 -- *		# Another one
 -- *   
