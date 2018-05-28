@@ -10,6 +10,13 @@ parsing and formatting working just fine so far. It is following the
 [YAML 1.2 Spec](http://yaml.org/spec/1.2/spec.html). Any bugs that occurred
 will be fixed as soon as possible.
 
+### Production Grammar
+
+The production grammar located at
+`src/Format/Preserving/YAML/Parser.Grammar.hs`. Grammar naming convention is
+based on the YAML 1.2 Spec
+[Grammar Naming Convention](http://yaml.org/spec/1.2/spec.html#id2770517).
+
 ### Usage Example
 
 ```haskell
@@ -33,7 +40,7 @@ main = do
 -- >   
 -- *
 -- * # This is a comment
--- *		# Another one
+-- * 		# Another one
 -- *   
 ```
 
