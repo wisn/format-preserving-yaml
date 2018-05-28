@@ -30,7 +30,9 @@ main = do
 
     case parsed of
         Right yaml -> putStrLn $ T.unpack (format yaml)
--- > # This is a comment
+-- >   
+-- *
+-- * # This is a comment
 -- *		# Another one
 -- *   
 ```
