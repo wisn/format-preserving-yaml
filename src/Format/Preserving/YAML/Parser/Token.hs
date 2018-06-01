@@ -1,11 +1,14 @@
 module Format.Preserving.YAML.Parser.Token where
 
-import qualified Data.Text as T
+import Data.Text (Text)
 
 data Token
-    = Comment T.Text Token
-    | EOF
-    | EOL Int Token
-    | Spaces Int Token
-    | Tabs Int Token
+    = CarriageReturn
+    | Comment Text
+    | LineFeed
+    | Space
+    | Str Text
+    | Tab
     deriving (Eq, Show)
+
+type Tokens = [Token]

@@ -1,42 +1,68 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 import Test.Hspec
 
-import qualified Data.Text as T
-
-import Format.Preserving.YAML
-import Format.Preserving.YAML.Parser.Token
+import Format.Preserving.YAML (format, parse)
+import Format.Preserving.YAML.Parser.Token (Token (..))
 
 main :: IO ()
 main = hspec $ do
     describe "Format.Preserving.YAML.parse" $ do
-        it "returns whitespace productions token" $ do
+        it "returns whitespace production token" $ do
             parse "    \t\t\t "
             `shouldBe`
-            (Right (Spaces 4 (Tabs 3 (Spaces 1 EOF))))
-        it "returns newline productions token" $ do
-            parse "\n\n\n\r\r\r\r" -- Complete test will be added later
+            (Right [Space, Space, Space, Space, Tab, Tab, Tab, Space])
+        it "returns newline production tokens" $ do
+            parse "\n\n\n\r\n\r\r"
             `shouldBe`
-            (Right (EOL 3 (EOL 4 EOF)))
-        it "returns comment production token (any)" $ do
+            (Right [ LineFeed
+                   , LineFeed
+                   , LineFeed
+                   , CarriageReturn
+                   , LineFeed
+                   , CarriageReturn
+                   , CarriageReturn
+                   ])
+        it "returns comment production tokens" $ do
             parse "# YAML\n"
             `shouldBe`
-            (Right (Comment (T.pack " YAML") (EOL 1 EOF)))
-        it "returns comment productions token (eof)" $ do
-            -- BUG: not catching EOF after a comment
+            (Right [Comment " YAML", LineFeed])
+        it "returns comment production tokens (eof)" $ do
             parse "# A comment\n   # Another\tcomment"
             `shouldBe`
-            (Right (Comment (T.pack " A comment")
-            (EOL 1 (Spaces 3 (Comment (T.pack " Another\tcomment") EOF)))))
+            (Right [ Comment " A comment"
+                   , LineFeed
+                   , Space
+                   , Space
+                   , Space
+                   , Comment " Another\tcomment"
+                   ])
+        it "returns comment production tokens (carriage-return)" $ do
+            parse "\r# YAML\r\n"
+            `shouldBe`
+            (Right [ CarriageReturn
+                   , Comment " YAML"
+                   , CarriageReturn
+                   , LineFeed
+                   ])
     describe "Format.Preserving.YAML.format" $ do
-        it "returns whitespaces text" $ do
-            format (Spaces 4 (Tabs 3 (Spaces 1 EOF)))
+        it "returns whitespace text" $ do
+            format [Space, Space, Space, Space, Tab, Tab, Tab, Space]
             `shouldBe`
-            (T.pack "    \t\t\t ")
+            "    \t\t\t "
         it "returns newline text" $ do
-            -- BUG: Newline not distinguished
-            format (EOL 3 (EOL 4 EOF))
+            format [LineFeed, CarriageReturn, CarriageReturn, LineFeed]
             `shouldBe`
-            (T.pack "\n\n\n\r\r\r\r")
+            "\n\r\r\n"
         it "returns comment text" $ do
-            format (Comment (T.pack " YAML") (EOL 1 EOF))
+            format [Comment " YAML", LineFeed]
             `shouldBe`
-            (T.pack "# YAML\n")
+            "# YAML\n"
+        it "returns comment text (eof)" $ do
+            format [LineFeed, Comment " YAML\t"]
+            `shouldBe`
+            "\n# YAML\t"
+        it "returns comment text (carriage-return)" $ do
+            format [CarriageReturn, Comment " YAML", CarriageReturn]
+            `shouldBe`
+            "\r# YAML\r"

@@ -1,24 +1,18 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Format.Preserving.YAML.Formatter (format) where
 
-import qualified Data.Text as T
+import Data.Monoid ((<>))
+import qualified Data.Text.Lazy.Builder as TLB (Builder, fromText)
 
 import Format.Preserving.YAML.Parser.Token
 
-class Format a where
-    format :: a -> T.Text
-
--- | Format instance that retrieve a YAML Token then transform it to Text.
-instance Format Token where
-    format = formatToken
-
-formatToken :: Token -> T.Text
-formatToken (Comment c t)
-    = T.concat [T.concat [T.singleton '#', c], formatToken t]
-formatToken EOF
-    = T.empty
-formatToken (EOL n t)
-    = T.concat [T.pack $ replicate n '\n', formatToken t]
-formatToken (Tabs n t)
-    = T.concat [T.pack $ replicate n '\t', formatToken t]
-formatToken (Spaces n t)
-    = T.concat [T.pack $ replicate n ' ', formatToken t]
+-- | Format parsed YAML into its original form.
+format :: Tokens -> TLB.Builder
+format = foldMap token
+  where
+    token CarriageReturn = "\r"
+    token (Comment c)    = "#" <> TLB.fromText c
+    token LineFeed       = "\n"
+    token Space          = " "
+    token Tab            = "\t"

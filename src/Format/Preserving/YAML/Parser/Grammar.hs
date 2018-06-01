@@ -2,56 +2,52 @@
 
 module Format.Preserving.YAML.Parser.Grammar (yaml) where
 
-import Control.Applicative ((<$), (<$>), (<|>), (<*>))
-import qualified Data.Text as T
+import Control.Applicative ((<$), (<$>), (<|>), (*>))
+import qualified Data.Text as T (pack)
 import qualified Text.Parsec as P
 
 import Format.Preserving.YAML.Parser.Token
 
 -- | A parent grammar that handle all possible YAML content.
-yaml :: P.Stream s m Char => P.ParsecT s u m Token
-yaml =  bBreak
-    <|> cComment
-    <|> sWhite
-    <|> (EOF <$ P.eof)
+yaml :: P.Stream s m Char => P.ParsecT s u m Tokens
+yaml =  P.many $  bBreak
+              <|> cComment
+              <|> sWhite
 
--- | A newline character `\r` that used by MacOS upto 9.x. Capture and count
--- its consecutive character then back to `yaml` grammar.
+-- | A grammar transformer for EOF to LineFeed.
+eof :: P.Stream s m Char => P.ParsecT s u m Char
+eof = P.eof *> pure '\n'
+
+-- | A combinator grammar for newline.
+newline :: P.Stream s m Char => P.ParsecT s u m Char
+newline = P.char '\n' <|> P.char '\r'
+
+-- | A newline character `\r` grammar that used by MacOS upto 9.x
 bCarriageReturn :: P.Stream s m Char => P.ParsecT s u m Token
-bCarriageReturn =
-    let count = EOL. length <$> P.many1 (P.char '\r')
-    in count <*> yaml
+bCarriageReturn = CarriageReturn <$ P.char '\r'
 
--- | A newline character `\n` that used by UNIX and MacOS X. Capture and count
--- its consecutive character then back to `yaml` grammar.
+-- | A newline character `\n` grammar that used by UNIX and MacOS X.
 bLineFeed :: P.Stream s m Char => P.ParsecT s u m Token
-bLineFeed =
-    let count = EOL. length <$> P.many1 (P.char '\n')
-    in count <*> yaml
+bLineFeed = LineFeed <$ P.char '\n'
 
--- TODO: Add DOS style newline `\r\n`.
 -- | A parent grammar that handle all newline characters.
 bBreak :: P.Stream s m Char => P.ParsecT s u m Token
-bBreak =  bCarriageReturn
-      <|> bLineFeed
+bBreak = bCarriageReturn <|> bLineFeed
 
+-- | A grammar for collecting single line comment.
 cComment :: P.Stream s m Char => P.ParsecT s u m Token
 cComment =
     let collect = Comment. T.pack <$> P.manyTill P.anyChar endline
-        endline = P.lookAhead (P.char '\n')
-    in P.char '#' *> collect <*> yaml
+        endline = P.lookAhead (newline <|> eof)
+    in P.char '#' *> collect
 
--- | Capture and count consecutive whitespace then back to `yaml` grammar.
+-- | A grammar for capturing whitespace.
 sSpace :: P.Stream s m Char => P.ParsecT s u m Token
-sSpace =
-    let count = Spaces. length <$> P.many1 (P.char ' ')
-    in count <*> yaml
+sSpace = Space <$ P.char ' '
 
--- | Capture and count consecutive tab then back to `yaml` grammar.
+-- | A grammar for capturing tab.
 sTab :: P.Stream s m Char => P.ParsecT s u m Token
-sTab =
-    let count = Tabs. length <$> P.many1 (P.char '\t')
-    in count <*> yaml
+sTab = Tab <$ P.char '\t'
 
 -- | A parent grammar that handle both whitespace and tab.
 sWhite :: P.Stream s m Char => P.ParsecT s u m Token

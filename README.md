@@ -17,31 +17,48 @@ The production grammar located at
 based on the YAML 1.2 Spec
 [Grammar Naming Convention](http://yaml.org/spec/1.2/spec.html#id2770517).
 
+### Implementation Validation
+
+I'm reading [Learn YAML in Y Minutes](https://learnxinyminutes.com/docs/yaml/)
+to think about the implementation and looked at the YAML 1.2 Spec production
+grammar for the best outcome. Making sure that the YAML is valid using online
+[YAML Validator](https://codebeautify.org/yaml-validator).
+
 ### Usage Example
 
 ```haskell
+{-# LANGUAGE OverloadedStrings #-}
+
 module Main where
 
-import qualified Data.Text as T
+import Data.Monoid ((<>))
+import qualified Data.Text.Lazy.Builder as TLB (toLazyText)
+import qualified Data.Text.Lazy.IO as T (putStrLn)
 
 import Format.Preserving.YAML
 
 main :: IO ()
 main = do
-    let origin = "  \n\n# This is a comment\n\t\t# Another one\n   "
-        parsed = parse origin
-
-    print parsed
--- > Right (Spaces 2 (EOL 2 (Comment " This is a comment" (EOL 1 (
--- * Tabs 2 (Comment " Another one" (EOL 1 (Spaces 3 EOF))))))))
+    let parsed = parse "\t\t\t    \n\n\t# Comment\t   \n"
+    putStrLn $ "Parsed:\n" <> show parsed <> "\n"
+-- > Parsed:
+-- * Right [Tab,Tab,Tab,Space,Space,Space,Space,LineFeed,LineFeed,Tab,
+-- * Comment " Comment\t   ",LineFeed]
 
     case parsed of
-        Right yaml -> putStrLn $ T.unpack (format yaml)
--- >   
+        Right yaml -> do
+            let formatted = format yaml
+            putStrLn $ "Formatted Text:\n" <> show formatted <> "\n"
+-- > Formatted Text:
+-- * "\t\t\t    \n\n\t# Comment\t   \n"
+
+            putStrLn "YAML:"
+            (T.putStrLn. TLB.toLazyText) formatted
+-- > YAML:
+-- * 			    
 -- *
--- * # This is a comment
--- * 		# Another one
--- *   
+-- *	# Comment	   
+-- *
 ```
 
 ## License
