@@ -2,13 +2,13 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 3e57344747c600a43654e19874f042802a39b440badf7528f567c105ac688a55
+-- hash: 77d501765bcd528474037efe9be9de83db8febc9f5e6023783165be7d17c5482
 
 name:           format-preserving-yaml
 version:        0.0.1.0
 synopsis:       A Format-Preserving YAML Parser
 description:    A Format-Preserving YAML Parser
-category:       Format
+category:       Format-Preserving
 homepage:       https://github.com/wisn/format-preserving-yaml#readme
 bug-reports:    https://github.com/wisn/format-preserving-yaml/issues
 author:         Wisnu Adi Nurcahyo
@@ -39,6 +39,11 @@ library
       Format.Preserving.YAML.Formatter
       Format.Preserving.YAML.Parser
       Format.Preserving.YAML.Parser.Grammar
+      Format.Preserving.YAML.Parser.Grammar.Comment
+      Format.Preserving.YAML.Parser.Grammar.Common
+      Format.Preserving.YAML.Parser.Grammar.Newline
+      Format.Preserving.YAML.Parser.Grammar.String
+      Format.Preserving.YAML.Parser.Grammar.Whitespace
       Format.Preserving.YAML.Parser.Token
   other-modules:
       Paths_format_preserving_yaml

@@ -22,7 +22,8 @@ based on the YAML 1.2 Spec
 I'm reading [Learn YAML in Y Minutes](https://learnxinyminutes.com/docs/yaml/)
 to think about the implementation and looked at the YAML 1.2 Spec production
 grammar for the best outcome. Making sure that the YAML is valid using online
-[YAML Validator](https://codebeautify.org/yaml-validator).
+[YAML Linter](http://www.yamllint.com/) and online
+[YAML Parser](http://yaml-online-parser.appspot.com/).
 
 ### Usage Example
 

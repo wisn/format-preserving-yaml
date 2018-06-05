@@ -45,6 +45,26 @@ main = hspec $ do
                    , CarriageReturn
                    , LineFeed
                    ])
+        it "returns comment production tokens (consecutive comment)" $ do
+            parse "# Consecutive#\n#Comment"
+            `shouldBe`
+            (Right [Comment " Consecutive#", LineFeed, Comment "Comment"])
+        it "returns Str text production token" $ do
+            parse "hello^_ worldA$"
+            `shouldBe`
+            (Right [Str "hello^_ worldA$"])
+        it "returns Str text with comment production grammar" $ do
+            parse "hello # YAML"
+            `shouldBe`
+            (Right [Str "hello", Space, Comment " YAML"])
+        it "returns Int text production token" $ do
+            parse "12345"
+            `shouldBe`
+            (Right [Int 12345])
+        it "returns Float text production token" $ do
+            parse "1.240"
+            `shouldBe`
+            (Right [Float 1.24])
     describe "Format.Preserving.YAML.format" $ do
         it "returns whitespace text" $ do
             format [Space, Space, Space, Space, Tab, Tab, Tab, Space]
@@ -66,3 +86,23 @@ main = hspec $ do
             format [CarriageReturn, Comment " YAML", CarriageReturn]
             `shouldBe`
             "\r# YAML\r"
+        it "returns comment text (consecutive comment)" $ do
+            format [Comment " Consecutive#", LineFeed, Comment "Comment"]
+            `shouldBe`
+            "# Consecutive#\n#Comment"
+        it "returns Str text" $ do
+            format [Str "hello^_ worldA$"]
+            `shouldBe`
+            "hello^_ worldA$"
+        it "returns Str text with comment" $ do
+            format [Str "hello", Space, Comment " YAML"]
+            `shouldBe`
+            "hello # YAML"
+        it "returns Int text" $ do
+            format [Int 123456]
+            `shouldBe`
+            "123456"
+        it "returns Float text" $ do
+            format [Float 1.24]
+            `shouldBe`
+            "1.24"
