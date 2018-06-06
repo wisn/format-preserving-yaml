@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 77d501765bcd528474037efe9be9de83db8febc9f5e6023783165be7d17c5482
+-- hash: 4e50fb9b642a98e4196da2e56e4d23cc3b6df72516da3f9b6799e2fc1cde27ea
 
 name:           format-preserving-yaml
 version:        0.0.1.0
@@ -39,6 +39,7 @@ library
       Format.Preserving.YAML.Formatter
       Format.Preserving.YAML.Parser
       Format.Preserving.YAML.Parser.Grammar
+      Format.Preserving.YAML.Parser.Grammar.Boolean
       Format.Preserving.YAML.Parser.Grammar.Comment
       Format.Preserving.YAML.Parser.Grammar.Common
       Format.Preserving.YAML.Parser.Grammar.Newline

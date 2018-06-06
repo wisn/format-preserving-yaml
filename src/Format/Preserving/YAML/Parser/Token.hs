@@ -3,7 +3,8 @@ module Format.Preserving.YAML.Parser.Token where
 import Data.Text (Text)
 
 data Token
-    = CarriageReturn
+    = Bool Bool
+    | CarriageReturn
     | Comment Text
     | Float Float
     | Int Int

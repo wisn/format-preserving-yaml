@@ -5,6 +5,7 @@ import Test.Hspec
 import Format.Preserving.YAML (format, parse)
 import Format.Preserving.YAML.Parser.Token (Token (..))
 
+-- TODO: Organize tests.
 main :: IO ()
 main = hspec $ do
     describe "Format.Preserving.YAML.parse" $ do
@@ -65,6 +66,14 @@ main = hspec $ do
             parse "1.240"
             `shouldBe`
             (Right [Float 1.24])
+        it "returns Bool text production token" $ do
+            parse "true   "
+            `shouldBe`
+            (Right [Bool True, Space, Space, Space])
+        it "returns Str text production token with consecutive Bool text" $ do
+            parse "  false true\r"
+            `shouldBe`
+            (Right [Space, Space, Str "false true", CarriageReturn])
     describe "Format.Preserving.YAML.format" $ do
         it "returns whitespace text" $ do
             format [Space, Space, Space, Space, Tab, Tab, Tab, Space]
