@@ -3,14 +3,17 @@ module Format.Preserving.YAML.Parser.Token where
 import Data.Text (Text)
 
 data Token
-    = Bool Bool
+    = Bool Bool Text
     | CarriageReturn
     | Comment Text
-    | Float Float
+    | Hexadecimal Text
+    | Inf Text
     | Int Int
     | LineFeed
+    | Nan Text
+    | Null Text
+    | Octal Text
     | Space
-    | Seq Tokens
     | Str Text
     | Tab
     deriving (Eq, Show)

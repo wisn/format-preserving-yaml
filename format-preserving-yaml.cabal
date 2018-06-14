@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 4e50fb9b642a98e4196da2e56e4d23cc3b6df72516da3f9b6799e2fc1cde27ea
+-- hash: 5e30795c2f3bbf4045096d7236fb87f2cae6c1caa7085b76e557fcf72c53a8f0
 
 name:           format-preserving-yaml
 version:        0.0.1.0
@@ -39,11 +39,15 @@ library
       Format.Preserving.YAML.Formatter
       Format.Preserving.YAML.Parser
       Format.Preserving.YAML.Parser.Grammar
-      Format.Preserving.YAML.Parser.Grammar.Boolean
       Format.Preserving.YAML.Parser.Grammar.Comment
       Format.Preserving.YAML.Parser.Grammar.Common
       Format.Preserving.YAML.Parser.Grammar.Newline
-      Format.Preserving.YAML.Parser.Grammar.String
+      Format.Preserving.YAML.Parser.Grammar.Scalar
+      Format.Preserving.YAML.Parser.Grammar.Scalar.Boolean
+      Format.Preserving.YAML.Parser.Grammar.Scalar.Floating
+      Format.Preserving.YAML.Parser.Grammar.Scalar.Integer
+      Format.Preserving.YAML.Parser.Grammar.Scalar.Null
+      Format.Preserving.YAML.Parser.Grammar.Scalar.String
       Format.Preserving.YAML.Parser.Grammar.Whitespace
       Format.Preserving.YAML.Parser.Token
   other-modules:
@@ -77,5 +81,19 @@ test-suite format-preserving-yaml-test
     , parsec >=3.1 && <3.2
     , text >=1.2.3 && <1.2.4
   other-modules:
+      Formatter.BooleanSpec
+      Formatter.CommentSpec
+      Formatter.FloatingSpec
+      Formatter.IntegerSpec
+      Formatter.NewlineSpec
+      Formatter.NullSpec
+      Formatter.WhitespaceSpec
+      Parser.BooleanSpec
+      Parser.CommentSpec
+      Parser.FloatingSpec
+      Parser.IntegerSpec
+      Parser.NewlineSpec
+      Parser.NullSpec
+      Parser.WhitespaceSpec
       Paths_format_preserving_yaml
   default-language: Haskell2010

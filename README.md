@@ -13,7 +13,7 @@ will be fixed as soon as possible.
 ### Production Grammar
 
 The production grammar located at
-`src/Format/Preserving/YAML/Parser.Grammar.hs`. Grammar naming convention is
+`src/Format/Preserving/YAML/Parser/Grammar.hs`. Grammar naming convention is
 based on the YAML 1.2 Spec
 [Grammar Naming Convention](http://yaml.org/spec/1.2/spec.html#id2770517).
 
