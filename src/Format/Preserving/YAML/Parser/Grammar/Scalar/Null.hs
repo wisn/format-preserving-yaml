@@ -1,10 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 
-module Format.Preserving.YAML.Parser.Grammar.Scalar.Null
-  ( yNull
-  , nbNull
-  )
-where
+module Format.Preserving.YAML.Parser.Grammar.Scalar.Null where
 
 import Control.Applicative ((<|>))
 import qualified Data.Text as T (pack)
@@ -23,19 +19,11 @@ import Format.Preserving.YAML.Parser.Token (Token (..))
 --
 -- [null, Null: NULL, ~]
 yNull :: P.Stream s m Char => P.ParsecT s u m Token
-yNull =
-  let collect = Null. T.pack <$> P.manyTill P.anyChar endline
-      endline = P.lookAhead (sWhitespace <|> bNewline <|> cEof)
-  in nbNull *> collect
+yNull = P.lookAhead nbNull *> collect
+  where
+  collect = Null. T.pack <$> P.manyTill P.anyChar (P.lookAhead bNotStr)
 
 -- | A grammar that identify Null content.
-nbNull :: P.Stream s m Char => P.ParsecT s u m Char
-nbNull = P.lookAhead (strNull <|> chrNull)
-
--- | A grammar that identify null, Null, NULL content form.
-strNull :: P.Stream s m Char => P.ParsecT s u m Char
-strNull = (P.string "null" <|> P.string "Null" <|> P.string "NULL") *> bNotStr
-
--- | A grammar that identify '~' Null form.
-chrNull :: P.Stream s m Char => P.ParsecT s u m Char
-chrNull = P.char '~' *> bNotStr
+nbNull :: P.Stream s m Char => P.ParsecT s u m String
+nbNull = P.string "null" <|> P.string "Null" <|> P.string "NULL" <|>
+         P.string "~"

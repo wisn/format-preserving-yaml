@@ -6,7 +6,7 @@ import Control.Applicative ((<|>))
 import qualified Text.Parsec as P
 
 import Format.Preserving.YAML.Parser.Grammar.Scalar.Boolean (bool)
-import Format.Preserving.YAML.Parser.Grammar.Scalar.Floating (inf, nan)
+import Format.Preserving.YAML.Parser.Grammar.Scalar.Floating (float, inf, nan)
 import Format.Preserving.YAML.Parser.Grammar.Scalar.Integer
   ( int
   , hexadecimal
@@ -21,5 +21,5 @@ scalar :: P.Stream s m Char => P.ParsecT s u m Token
 scalar =  P.try yNull
       <|> P.try bool
       <|> P.try int <|> P.try octal <|> P.try hexadecimal
-      <|> P.try inf <|> P.try nan
+      <|> P.try float <|> P.try inf <|> P.try nan
       <|> nbChar

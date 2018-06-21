@@ -1,12 +1,14 @@
 {-# LANGUAGE BangPatterns, FlexibleContexts #-}
 
 module Format.Preserving.YAML.Parser.Grammar.Common
-  ( cEof
-  , cIndicator
+  ( bNotStr
   , cBSeparator
+  , cEof
+  , cExp
+  , cIndicator
   , cPrintable
   , cSign
-  , bNotStr
+  , strSign
   )
 where
 
@@ -46,6 +48,14 @@ cBSeparator = bNewline <|> cEof <|> mapping
 -- | A grammar that identify integer sign such as '+' or '-'.
 cSign :: P.Stream s m Char => P.ParsecT s u m Char
 cSign = P.char '-' <|> P.char '+'
+
+-- | A grammar that just like cSign but String.
+strSign :: P.Stream s m Char => P.ParsecT s u m String
+strSign = P.string "-" <|> P.string "+"
+
+-- | A grammar that identify exponent character.
+cExp :: P.Stream s m Char => P.ParsecT s u m Char
+cExp = P.char 'e' <|> P.char 'E'
 
 -- | A grammar for an indicator of content separator.
 cIndicator :: P.Stream s m Char => P.ParsecT s u m Char

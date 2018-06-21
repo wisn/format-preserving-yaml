@@ -27,28 +27,24 @@ bool = true <|> false
 
 -- | A tokenizer that capture True content.
 true :: P.Stream s m Char => P.ParsecT s u m Token
-true =
-  let collect = Bool True. T.pack <$> P.manyTill P.anyChar endline
-      endline = P.lookAhead (sWhitespace <|> bNewline <|> cEof)
-  in P.lookAhead nbTrue *> collect
+true = Bool True. T.pack <$> nbTrue
 
 -- | A tokenizer that capture False content.
 false :: P.Stream s m Char => P.ParsecT s u m Token
-false =
-  let collect = Bool False. T.pack <$> P.manyTill P.anyChar endline
-      endline = P.lookAhead (sWhitespace <|> bNewline <|> cEof)
-  in P.lookAhead nbFalse *> collect
+false = Bool False. T.pack <$> nbFalse
 
 -- | A grammar that identify Bool content such as True and False.
-nbBoolean :: P.Stream s m Char => P.ParsecT s u m Char
+nbBoolean :: P.Stream s m Char => P.ParsecT s u m String
 nbBoolean = nbTrue <|> nbFalse
 
 -- | A grammar that identify all True content form.
-nbTrue :: P.Stream s m Char => P.ParsecT s u m Char
-nbTrue = (P.string "true" <|> P.string "True" <|> P.string "TRUE")
-      *> bNotStr
+nbTrue :: P.Stream s m Char => P.ParsecT s u m String
+nbTrue = P.lookAhead true *> P.manyTill P.anyChar (P.lookAhead bNotStr)
+  where
+  true = P.string "true" <|> P.string "True" <|> P.string "TRUE"
 
 -- | A grammar that identify all False content form.
-nbFalse :: P.Stream s m Char => P.ParsecT s u m Char
-nbFalse = (P.string "false" <|> P.string "False" <|> P.string "FALSE")
-       *> bNotStr
+nbFalse :: P.Stream s m Char => P.ParsecT s u m String
+nbFalse = P.lookAhead false *> P.manyTill P.anyChar (P.lookAhead bNotStr)
+  where
+  false = P.string "false" <|> P.string "False" <|> P.string "FALSE"

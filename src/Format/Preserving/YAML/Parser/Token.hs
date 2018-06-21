@@ -6,6 +6,7 @@ data Token
     = Bool Bool Text
     | CarriageReturn
     | Comment Text
+    | Float Text
     | Hexadecimal Text
     | Inf Text
     | Int Int
