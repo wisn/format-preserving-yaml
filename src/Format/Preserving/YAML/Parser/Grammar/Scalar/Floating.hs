@@ -40,7 +40,8 @@ nbNsDecimal = (:) <$> P.char '.' <*> P.manyTill P.digit endline
 nbNsExp :: P.Stream s m Char => P.ParsecT s u m String
 nbNsExp = (:) <$> (P.char 'e' <|> P.char 'E') <*> number
   where
-  number  = (<>) <$> P.option [] strSign <*> P.manyTill P.digit bNotStr
+  number  = (<>) <$> P.option [] strSign <*> P.manyTill P.digit endline
+  endline = P.lookAhead bNotStr
 
 -- | A tokenizer that capture Inf content.
 --
@@ -54,8 +55,8 @@ nbInf :: P.Stream s m Char => P.ParsecT s u m String
 nbInf = (<>) <$> P.option [] strSign <*> (P.lookAhead inf *> collect)
   where
   inf     = (<>) <$> P.string "." <*> strInf
-  strInf  = P.string "inf" <|> P.string "Inf" <|> P.string "INF"
-  collect = P.manyTill P.anyChar bNotStr
+  strInf  = P.string "inf" <|> P.try (P.string "Inf") <|> P.string "INF"
+  collect = P.manyTill P.anyChar (P.lookAhead bNotStr)
 
 -- | A tokenizer that capture Nan content.
 --
@@ -68,5 +69,5 @@ nan = Nan. T.pack <$> nbNan
 nbNan :: P.Stream s m Char => P.ParsecT s u m String
 nbNan = P.char '.' *> P.lookAhead nan *> collect
   where
-  nan     = P.string "nan" <|> P.string "NaN" <|> P.string "NAN"
-  collect = P.manyTill P.anyChar bNotStr
+  nan     = P.string "nan" <|> P.try (P.string "NaN") <|> P.string "NAN"
+  collect = P.manyTill P.anyChar (P.lookAhead bNotStr)

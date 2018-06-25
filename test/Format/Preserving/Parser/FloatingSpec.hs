@@ -32,12 +32,12 @@ spec = do
       parse "-.Inf" `shouldBe` (Right [Inf "-.Inf"])
     it "returns single Inf (INF) token" $ do
       parse ".INF" `shouldBe` (Right [Inf ".INF"])
-    it "returns single Inf (+INF) token" $ do
-      parse "+.INF" `shouldBe` (Right [Inf "+.INF"])
+    it "returns single Inf (+INF) token with Space" $ do
+      parse "+.INF " `shouldBe` (Right [Inf "+.INF", Space])
   context "with Nan token" $ do
     it "returns single Nan (nan) token" $ do
       parse ".nan" `shouldBe` (Right [Nan "nan"])
     it "returns single Nan (NaN) token" $ do
       parse ".NaN" `shouldBe` (Right [Nan "NaN"])
-    it "returns single Nan (NAN) token" $ do
-      parse ".NAN" `shouldBe` (Right [Nan "NAN"])
+    it "returns single Nan (NAN) token with Space" $ do
+      parse ".NAN " `shouldBe` (Right [Nan "NAN", Space])

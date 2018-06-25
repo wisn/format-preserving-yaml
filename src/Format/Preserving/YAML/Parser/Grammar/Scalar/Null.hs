@@ -1,8 +1,10 @@
-{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE BangPatterns, FlexibleContexts #-}
 
 module Format.Preserving.YAML.Parser.Grammar.Scalar.Null where
 
 import Control.Applicative ((<|>))
+import Data.Char (ord)
+import Data.Monoid ((<>))
 import qualified Data.Text as T (pack)
 import qualified Text.Parsec as P
 
@@ -25,5 +27,5 @@ yNull = P.lookAhead nbNull *> collect
 
 -- | A grammar that identify Null content.
 nbNull :: P.Stream s m Char => P.ParsecT s u m String
-nbNull = P.string "null" <|> P.string "Null" <|> P.string "NULL" <|>
+nbNull = P.string "null" <|> P.try (P.string "Null") <|> P.string "NULL" <|>
          P.string "~"

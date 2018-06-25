@@ -41,10 +41,10 @@ nbBoolean = nbTrue <|> nbFalse
 nbTrue :: P.Stream s m Char => P.ParsecT s u m String
 nbTrue = P.lookAhead true *> P.manyTill P.anyChar (P.lookAhead bNotStr)
   where
-  true = P.string "true" <|> P.string "True" <|> P.string "TRUE"
+  true = P.string "true" <|> P.try (P.string "True") <|> P.string "TRUE"
 
 -- | A grammar that identify all False content form.
 nbFalse :: P.Stream s m Char => P.ParsecT s u m String
 nbFalse = P.lookAhead false *> P.manyTill P.anyChar (P.lookAhead bNotStr)
   where
-  false = P.string "false" <|> P.string "False" <|> P.string "FALSE"
+  false = P.string "false" <|> P.try (P.string "False") <|> P.string "FALSE"
