@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5e30795c2f3bbf4045096d7236fb87f2cae6c1caa7085b76e557fcf72c53a8f0
+-- hash: ad875a7c78db4a254485670ed1338de30038c23a5f2b82345300d728d5a0f9b0
 
 name:           format-preserving-yaml
 version:        0.0.1.0
@@ -32,24 +32,20 @@ library
       src
   build-depends:
       base >=4.7 && <5
+    , containers >=0.5.0 && <0.6
     , parsec >=3.1 && <3.2
     , text >=1.2.3 && <1.2.4
   exposed-modules:
       Format.Preserving.YAML
       Format.Preserving.YAML.Formatter
+      Format.Preserving.YAML.Parsec.Utils
       Format.Preserving.YAML.Parser
-      Format.Preserving.YAML.Parser.Grammar
-      Format.Preserving.YAML.Parser.Grammar.Comment
-      Format.Preserving.YAML.Parser.Grammar.Common
-      Format.Preserving.YAML.Parser.Grammar.Newline
-      Format.Preserving.YAML.Parser.Grammar.Scalar
-      Format.Preserving.YAML.Parser.Grammar.Scalar.Boolean
-      Format.Preserving.YAML.Parser.Grammar.Scalar.Floating
-      Format.Preserving.YAML.Parser.Grammar.Scalar.Integer
-      Format.Preserving.YAML.Parser.Grammar.Scalar.Null
-      Format.Preserving.YAML.Parser.Grammar.Scalar.String
-      Format.Preserving.YAML.Parser.Grammar.Whitespace
-      Format.Preserving.YAML.Parser.Token
+      Format.Preserving.YAML.Spec12.Grammar
+      Format.Preserving.YAML.Spec12.Grammar.Common
+      Format.Preserving.YAML.Spec12.Grammar.Scalar
+      Format.Preserving.YAML.Spec12.Parser
+      Format.Preserving.YAML.Spec12.Types
+      Format.Preserving.YAML.Types
   other-modules:
       Paths_format_preserving_yaml
   default-language: Haskell2010
@@ -61,6 +57,7 @@ executable format-preserving-yaml
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
+    , containers >=0.5.0 && <0.6
     , format-preserving-yaml
     , parsec >=3.1 && <3.2
     , text >=1.2.3 && <1.2.4
@@ -76,24 +73,12 @@ test-suite format-preserving-yaml-test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
+    , containers >=0.5.0 && <0.6
     , format-preserving-yaml
     , hspec <2.5
     , parsec >=3.1 && <3.2
     , text >=1.2.3 && <1.2.4
   other-modules:
-      Formatter.BooleanSpec
-      Formatter.CommentSpec
-      Formatter.FloatingSpec
-      Formatter.IntegerSpec
-      Formatter.NewlineSpec
-      Formatter.NullSpec
-      Formatter.WhitespaceSpec
-      Parser.BooleanSpec
-      Parser.CommentSpec
-      Parser.FloatingSpec
-      Parser.IntegerSpec
-      Parser.NewlineSpec
-      Parser.NullSpec
-      Parser.WhitespaceSpec
+      Spec12.Parser.ScalarSpec
       Paths_format_preserving_yaml
   default-language: Haskell2010
