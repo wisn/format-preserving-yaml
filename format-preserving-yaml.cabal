@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: ad875a7c78db4a254485670ed1338de30038c23a5f2b82345300d728d5a0f9b0
+-- hash: ed15ae2bcac23297a3832f5e75b44f9738c49f8e035f9f564c093004d569ac15
 
 name:           format-preserving-yaml
 version:        0.0.1.0
@@ -32,8 +32,8 @@ library
       src
   build-depends:
       base >=4.7 && <5
-    , containers >=0.5.0 && <0.6
     , parsec >=3.1 && <3.2
+    , scientific >=0.3.6 && <0.3.7
     , text >=1.2.3 && <1.2.4
   exposed-modules:
       Format.Preserving.YAML
@@ -42,10 +42,10 @@ library
       Format.Preserving.YAML.Parser
       Format.Preserving.YAML.Spec12.Grammar
       Format.Preserving.YAML.Spec12.Grammar.Common
+      Format.Preserving.YAML.Spec12.Grammar.Directive
       Format.Preserving.YAML.Spec12.Grammar.Scalar
       Format.Preserving.YAML.Spec12.Parser
       Format.Preserving.YAML.Spec12.Types
-      Format.Preserving.YAML.Types
   other-modules:
       Paths_format_preserving_yaml
   default-language: Haskell2010
@@ -57,9 +57,9 @@ executable format-preserving-yaml
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
-    , containers >=0.5.0 && <0.6
     , format-preserving-yaml
     , parsec >=3.1 && <3.2
+    , scientific >=0.3.6 && <0.3.7
     , text >=1.2.3 && <1.2.4
   other-modules:
       Paths_format_preserving_yaml
@@ -73,12 +73,13 @@ test-suite format-preserving-yaml-test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
-    , containers >=0.5.0 && <0.6
     , format-preserving-yaml
     , hspec <2.5
     , parsec >=3.1 && <3.2
+    , scientific >=0.3.6 && <0.3.7
     , text >=1.2.3 && <1.2.4
   other-modules:
+      Spec12.Parser.DirectiveSpec
       Spec12.Parser.ScalarSpec
       Paths_format_preserving_yaml
   default-language: Haskell2010

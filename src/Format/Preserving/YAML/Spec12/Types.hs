@@ -2,83 +2,118 @@
 
 module Format.Preserving.YAML.Spec12.Types where
 
-import qualified Data.Map as M (Map)
+import Data.Scientific (Scientific)
 import qualified Data.Text as T (Text, empty, unpack)
 
 -- | YAML support multi documents in one file. Each document separated by `...`
 -- string. If there is parse error, the Documents length will be zero. Please
 -- note that single YAML Directive `%YAML` greater than or equal to 2.0 will
--- break the whole parsing process.
+-- breaks the whole parsing process.
 data YAML = YAML Documents deriving (Show)
 
 type Documents = [Document]
 
 -- | YAML Document has its own Directive and Node. Version information and tags
 -- will be stored in the Directive. YAML Node will be Null if there is no node.
-data Document = Document Directive Body deriving (Show)
+data Document = Document Directives Node deriving (Show)
+
+type Directives = [Directive]
 
 -- | YAML Directive stores Version information and Tags. By Tags means
--- PrimaryTag, SecondaryTag, and NamedTag followed by the tag name.
-data Directive = Directive Version Tags deriving (Show)
+-- PrimaryTag, SecondaryTag, and NamedTag followed by the tag name. YAML also
+-- parse none-reserved Directive identified by the Ignored type.
+data Directive = Ignored T.Text Format
+               | Tag Tag Format
+               | Version Version Format
+               deriving (Eq)
 
-{- NOTE: There is a possibility to parse %FOO directive which is should be
-  ignored. Need to implement a proper structure for this.
--}
+instance Show Directive where
+  show (Ignored c _) = "Ignored \"" ++ T.unpack c ++ "\""
+  show (Tag c _)     = show c
+  show (Version c _) = "Version " ++ show c
+
+(~|||>) :: Directive -> [T.Text] -> Directive
+(Tag c f)     ~|||> w = Tag c (f -!!!> w)
+(Version c f) ~|||> w = Version c (f -!!!> w)
+(Ignored c f) ~|||> w = Ignored c (f -!!!> w)
 
 -- | YAML default Version is 1.2 and if there is user defined version, it will
 -- stores as Defined followed by the version information.
-data Version = Default | Defined T.Text deriving (Show)
+data Version = Default | UserDefined T.Text deriving (Eq, Show)
 
--- | YAML Tags stored as a Hashmap and use Handle as its key.
-type Tags = M.Map Handle T.Text
+-- | YAML Tags stored as a pair of Handle and Text. Handle acts as the key.
+type Tag = (Handle, T.Text)
 
 -- | YAML PrimaryTag and SecondaryTag doesn't have any names. If there is no
 -- SecondaryTag defined by the user, it will use `tag:yaml.org,2000:` by
 -- default. Also, if there is no PrimaryTag defined by the user, it will treats
--- as private Tag.
-data Handle = PrimaryTag | SecondaryTag | NamedTag T.Text deriving (Show)
-
-data Body = Node Node | SingleMap Nodes deriving (Show)
+-- as a private Tag.
+data Handle = PrimaryTag | SecondaryTag | NamedTag T.Text deriving (Eq, Show)
 
 -- | YAML Node basically built by Scalar, Sequence, and Map.
 data Node = Scalar Scalar
           | Sequence Nodes
-          | Map Node Nodes deriving (Show)
+          | Map Map
+          | SingleMap Maps
+          deriving (Show)
 
 type Nodes = [Node]
 
+-- | YAML Map separated to the Node structure since YAML could contains List of
+-- Map.
+type Map = (Node, Nodes)
+
+type Maps = [Map]
+
 -- | YAML Scalar just like on the Spec but with Comment as the addition.
-data Scalar = Bool Bool Format
+data Scalar = Anchor T.Text T.Text Format -- NOTE: Accepts map, seq, and scalar
+            | Alias T.Text Format
+            | Bool Bool Format
             | Comment Format
+            | DoubleQuoted T.Text Format
+            | Float Scientific Format
             | Hexadecimal T.Text Format
             | Inf Format
             | Int Int Format
             | NaN Format
             | Null Format
             | Octal T.Text Format
+            | SingleQuoted T.Text Format
             | Str T.Text Format
             deriving (Eq)
 
 instance Show Scalar where
-  show (Bool b _)        = show b
-  show (Comment _)       = "Comment"
-  show (Hexadecimal h _) = "Hexadecimal " ++ T.unpack h
-  show (Inf _)           = "Inf"
-  show (Int i _)         = "Int " ++ show i
-  show (NaN _)           = "NaN"
-  show (Null _)          = "Null"
-  show (Octal o _)       = "Octal " ++ T.unpack o
-  show (Str s _)         = "Str \"" ++ T.unpack s ++ "\""
+  -- show (Anchor k v _)     = "Anchor \"" ++ T.unpack k ++ "\" "
+  --                               ++ "\"" ++ T.unpack v ++ "\""
+  show (Alias c _)        = "Alias \"" ++ T.unpack c ++ "\""
+  show (Bool c _)         = show c
+  show (Comment _)        = "Comment"
+  show (DoubleQuoted c _) = "Str \"" ++ T.unpack c ++ "\""
+  show (Float c _)        = "Float " ++ show c
+  show (Hexadecimal c _)  = "Hexadecimal " ++ T.unpack c
+  show (Inf _)            = "Inf"
+  show (Int c _)          = "Int " ++ show c
+  show (NaN _)            = "NaN"
+  show (Null _)           = "Null"
+  show (Octal c _)        = "Octal " ++ T.unpack c
+  show (SingleQuoted c _) = "Str \"" ++ T.unpack c ++ "\""
+  show (Str c _)          = "Str \"" ++ T.unpack c ++ "\""
 
+-- | Replace `before` Whitespace Format.
 (~?>) :: Scalar -> T.Text -> Scalar
-(Bool b f)        ~?> w = Bool b (f -!> w)
-(Comment f)       ~?> w = Comment (f -!> w)
-(Hexadecimal h f) ~?> w = Hexadecimal h (f -!> w)
-(Inf f)           ~?> w = Inf (f -!> w)
-(Int i f)         ~?> w = Int i (f -!> w)
-(NaN f)           ~?> w = NaN (f -!> w)
-(Null f)          ~?> w = Null (f -!> w)
-(Octal o f)       ~?> w = Octal o (f -!> w)
+(Anchor k v f)     ~?> w = Anchor k v (f -!> w)
+(Alias c f)        ~?> w = Alias c (f -!> w)
+(Bool c f)         ~?> w = Bool c (f -!> w)
+(Comment f)        ~?> w = Comment (f -!> w)
+(DoubleQuoted c f) ~?> w = DoubleQuoted c (f -!> w)
+(Float c f)        ~?> w = Float c (f -!> w)
+(Hexadecimal c f)  ~?> w = Hexadecimal c (f -!> w)
+(Inf f)            ~?> w = Inf (f -!> w)
+(Int c f)          ~?> w = Int c (f -!> w)
+(NaN f)            ~?> w = NaN (f -!> w)
+(Null f)           ~?> w = Null (f -!> w)
+(Octal c f)        ~?> w = Octal c (f -!> w)
+(SingleQuoted c f) ~?> w = SingleQuoted c (f -!> w)
 
 -- | Format stores all necessary information for the format-preserving
 -- purpose. It store the original YAML text as well as the whitespaces.
@@ -117,10 +152,10 @@ initialWhitespace = Whitespace
                   }
 
 (-!>) :: Format -> T.Text -> Format
-f -!> w = f { whitespace = initialWhitespace { before = w } }
+f@(Format { whitespace = w }) -!> b = f { whitespace = w { before = b } }
 
 (-!!>) :: Format -> T.Text -> Format
-f -!!> w = f { whitespace = initialWhitespace { after = w } }
+f@(Format { whitespace = w }) -!!> a = f { whitespace = w { after = a } }
 
 (-!!!>) :: Format -> [T.Text] -> Format
-f -!!!> w = f { whitespace = initialWhitespace { middle = w } }
+f@(Format { whitespace = w }) -!!!> m = f { whitespace = w { middle = m } }

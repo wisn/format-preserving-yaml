@@ -4,6 +4,7 @@ module Spec12.Parser.ScalarSpec where
 
 import Test.Hspec
 
+import Data.Scientific (Scientific)
 import Format.Preserving.YAML (parseScalar)
 import Format.Preserving.YAML.Spec12.Types (Scalar (..), (=!>), (-!>))
 
@@ -79,6 +80,27 @@ spec = do
       parseScalar "0x123aF"
       `shouldBe`
       (Right (Hexadecimal "123aF" $ (=!>) "123aF"))
+  context "with Float" $ do
+    it "returns single Float (0.)" $ do
+      parseScalar "0."
+      `shouldBe`
+      (Right (Float (0.0 :: Scientific) $ (=!>) "0."))
+    it "returns single Float (-0.0)" $ do
+      parseScalar "-0.0"
+      `shouldBe`
+      (Right (Float ((-0.0) :: Scientific) $ (=!>) "-0.0"))
+    it "returns single Float (.5)" $ do
+      parseScalar ".5"
+      `shouldBe`
+      (Right (Float (0.5 :: Scientific) $ (=!>) ".5"))
+    it "returns single Float (+12e03)" $ do
+      parseScalar "+12e03"
+      `shouldBe`
+      (Right (Float (12e03 :: Scientific) $ (=!>) "+12e03"))
+    it "returns single Float (-2E+05)" $ do
+      parseScalar "-2E+05"
+      `shouldBe`
+      (Right (Float ((-2e+05) :: Scientific) $ (=!>) "-2E+05"))
   context "with Inf" $ do
     it "returns single Inf (.inf)" $ do
       parseScalar ".inf"
@@ -105,3 +127,18 @@ spec = do
       parseScalar ".NAN"
       `shouldBe`
       (Right (NaN $ (=!>) ".NAN"))
+  context "with SingleQuoted" $ do
+    it "returns single SingleQuoted ('s\\n\\tt  \\'\"\"r')" $ do
+      parseScalar "'s\n\tt  \'\"\"r'"
+      `shouldBe`
+      (Right (SingleQuoted "s\n\tt  \'\"\"r" $ (=!>) "s\n\tt  \'\"\"r"))
+  context "with DoubleQuoted" $ do
+    it "returns single DoubleQuoted (\"s\\n\\tt  ''\\\"r\")" $ do
+      parseScalar "\"s\n\tt  ''\\\"r\""
+      `shouldBe`
+      (Right (DoubleQuoted "s\n\tt  ''\\\"r" $ (=!>) "s\n\tt  ''\\\"r"))
+  context "with Alias" $ do
+    it "returns single Alias" $ do
+      parseScalar "*aL1as_"
+      `shouldBe`
+      (Right (Alias "aL1as_" $ (=!>) "aL1as_"))
