@@ -52,16 +52,18 @@ data Handle = PrimaryTag | SecondaryTag | NamedTag T.Text deriving (Eq, Show)
 
 -- | YAML Node basically built by Scalar, Sequence, and Map.
 data Node = Scalar Scalar
-          | Sequence Nodes
+          | Sequence Sequence
           | Map Map
           | SingleMap Maps
           deriving (Show)
 
-type Nodes = [Node]
+type Sequence = Nodes
 
 -- | YAML Map separated to the Node structure since YAML could contains List of
 -- Map.
 type Map = (Node, Nodes)
+
+type Nodes = [Node]
 
 type Maps = [Map]
 

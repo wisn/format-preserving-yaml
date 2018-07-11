@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 
-module Format.Preserving.YAML.Spec12.Grammar.Directive where
+module Format.Preserving.YAML.Spec12.Grammar.Directive (directive) where
 
 import Data.Monoid ((<>))
 import Data.Text (Text, pack)
