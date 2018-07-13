@@ -55,7 +55,7 @@ data Node = Scalar Scalar
           | Sequence Sequence
           | Map Map
           | SingleMap Maps
-          deriving (Show)
+          deriving (Eq, Show)
 
 type Sequence = Nodes
 

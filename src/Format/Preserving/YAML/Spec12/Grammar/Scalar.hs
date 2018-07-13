@@ -16,7 +16,12 @@ import Format.Preserving.YAML.Spec12.Grammar.Common
   , terminator
   , whitespace
   )
-import Format.Preserving.YAML.Spec12.Types (Scalar (..), (=!>), (~?>))
+import Format.Preserving.YAML.Spec12.Types
+  ( Node (..)
+  , Scalar (..)
+  , (=!>)
+  , (~?>)
+  )
 import qualified Text.Parsec as P
   ( Stream
   , Parsec
@@ -35,7 +40,7 @@ import qualified Text.Parsec as P
 
 -- | A grammar for parsing a YAML Scalar that also captures whitespace
 -- & newline.
-scalar :: P.Parsec Text () Scalar
+scalar :: P.Parsec Text () Node
 scalar = do
   spaces <- P.many (whitespace <|> newline)
   scalar <- P.choice [ comment
@@ -52,7 +57,7 @@ scalar = do
                      , alias
                      ]
 
-  return $ scalar ~?> (pack spaces)
+  return $ Scalar $ scalar ~?> (pack spaces)
 
 -- | A grammar for parsing a YAML Comment until newline or EOF.
 comment :: P.Parsec Text () Scalar
@@ -62,7 +67,6 @@ comment = do
   let format = (=!>) (pack comment)
 
   return $ Comment format
-
 
 -- | A grammar for parsing a YAML Null such as null, Null, and NULL based on
 -- the YAML 1.2 Spec Core Schema.

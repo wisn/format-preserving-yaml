@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: ed15ae2bcac23297a3832f5e75b44f9738c49f8e035f9f564c093004d569ac15
+-- hash: 8510f54ac7057ae05a2eab528815960089567aa3b202161c450280aa06c713b6
 
 name:           format-preserving-yaml
 version:        0.0.1.0
@@ -44,6 +44,7 @@ library
       Format.Preserving.YAML.Spec12.Grammar.Common
       Format.Preserving.YAML.Spec12.Grammar.Directive
       Format.Preserving.YAML.Spec12.Grammar.Scalar
+      Format.Preserving.YAML.Spec12.Grammar.Sequence
       Format.Preserving.YAML.Spec12.Parser
       Format.Preserving.YAML.Spec12.Types
   other-modules:
@@ -81,5 +82,6 @@ test-suite format-preserving-yaml-test
   other-modules:
       Spec12.Parser.DirectiveSpec
       Spec12.Parser.ScalarSpec
+      Spec12.Parser.SequenceSpec
       Paths_format_preserving_yaml
   default-language: Haskell2010

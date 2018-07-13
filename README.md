@@ -40,6 +40,12 @@ data Document = Document Directives Node
 - Float including Inf and NaN
 - Node Alias
 
+##### Sequence
+
+- Empty Sequence
+- Single element Sequence
+- Many elements Sequence
+
 **TODO**: Investigate more tricky cases and add more tests.
 
 #### Ongoing Implementation
@@ -48,6 +54,10 @@ data Document = Document Directives Node
 
 - Quoted Str (single, double)
 - Node Anchor
+
+##### Sequence
+
+- Nested Sequence
 
 **NOTE**: Fixing bugs. Implements parser for escaped character.
 
